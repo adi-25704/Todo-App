@@ -1,0 +1,23 @@
+.pay-checkbox {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--text-muted);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pay-checkbox:checked {
+  border-color: var(--accent);
+  background-color: var(--accent-inner);
+  background-clip: content-box; 
+  padding: 4px;
+  
+}
+
+.modal-content{
+    position: relative;
+}

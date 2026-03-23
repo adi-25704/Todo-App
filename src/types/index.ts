@@ -20,7 +20,8 @@ export interface Task extends BaseItem
 
 export interface Subscription extends BaseItem{
     type: "subscription";
-    dueDate: Date;
+    endDate: Date;
+    startDate: Date;
     amount: number;
     billingCycle: subCycle;
     autoRenew: boolean;

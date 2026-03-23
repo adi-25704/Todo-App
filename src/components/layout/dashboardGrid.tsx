@@ -59,7 +59,7 @@ export const DashboardGrid = () => {
       
       <div className="cards-grid">
         {subscriptions.map((sub) => {
-          const days = getDaysUntil(sub.dueDate);
+          const days = getDaysUntil(sub.endDate);
           const isUrgent = days <= 5;
           return (<>
             {selectedItem && <ViewTaskModal item={selectedItem} 

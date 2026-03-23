@@ -21,7 +21,7 @@ export const useTasks = () => {
     return response;
   }
 
-  const addSubscription = async (title: string, dueDate: Date, 
+  const addSubscription = async (title: string, startDate: Date, endDate: Date,
                           description: string, category: string, 
                           reminders: Date[], taskStatus: itemStatus,
                           billingCycle: subCycle, amount: number,
@@ -31,7 +31,8 @@ export const useTasks = () => {
       id: crypto.randomUUID(),
       type: "subscription",
       title,
-      dueDate,
+      startDate,
+      endDate,
       description,
       category,
       reminders,

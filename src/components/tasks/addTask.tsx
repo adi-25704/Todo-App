@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./addTask.css";
 import { useTasks } from "../../hooks/useTasks";
 import type { subCycle, itemStatus, ItemType, AppItem } from "../../types";
-
+import { CategorySelect } from "./categorySelect";
 export const AddItemModal = ({ 
   isOpen, 
   onClose, 
@@ -17,7 +17,8 @@ export const AddItemModal = ({
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
-  
+  const [endDate,setEndDate] = useState<Date>(new Date());
+  const [startDate,setStartDate] = useState<Date>(new Date());
   const [reminders, setReminders] = useState<Date[]>([]); 
   const [currentReminder, setCurrentReminder] = useState('');
   
@@ -44,7 +45,7 @@ export const AddItemModal = ({
       addTask(title, dueDate, description, category, reminders, taskStatus);
     } else {
       addSubscription(
-        title, dueDate, description, category, 
+        title, startDate, endDate, description, category, 
         reminders, taskStatus, billingCycle, Number(amount), autoRenew
       );
     }
@@ -57,6 +58,8 @@ export const AddItemModal = ({
     setReminders([]);
     setCurrentReminder('');
     setAutoRenew(false)
+    setStartDate(new Date()); 
+    setEndDate(new Date()); 
     onClose();
   };
 
@@ -74,17 +77,37 @@ export const AddItemModal = ({
         
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <input required type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-          
+          { type === "task" &&
+          <>
               <label htmlFor="due-date" style={{ display: 'block', marginBottom: '5px' }}>
-                { type === "task"?"Select Due Date:":"Select End Date:"}
+              Select Due Date:          
               </label>
-          <input required type="date" placeholder="Choose your due date"
+              <input required type="date" placeholder="Choose your due date"
                value={dueDate.toISOString().split('T')[0]} onChange={(e) => {
               const val = e.target.value; if (val) {setdueDate(new Date(val));}}} />
+              </>
+            }
+            { type === "subscription" &&
+          <>
+              <label htmlFor="start-date" style={{ display: 'block', marginBottom: '5px' }}>
+              Select Start Date:          
+              </label>
+              <input required type="date" placeholder="Choose your start date"
+               value={startDate.toISOString().split('T')[0]} onChange={(e) => {
+              const val = e.target.value; if (val) {setStartDate(new Date(val));}}} />
+
+              <label htmlFor="end-date" style={{ display: 'block', marginBottom: '5px' }}>
+              Select End Date:          
+              </label>
+              <input required type="date" placeholder="Choose your end date"
+               value={endDate.toISOString().split('T')[0]} onChange={(e) => {
+              const val = e.target.value; if (val) {setEndDate(new Date(val));}}} />
+              </>
+            }
+          
 
           <input required type="text" placeholder="Description" value={description} onChange={(e)=> setDescription(e.target.value)}/>
-          <input required type="text" placeholder="Category" value={category} onChange={(e)=> setCategory(e.target.value)}/>
-          
+          <CategorySelect selectedCategory={category} onChange={(category:string) => setCategory(category)} />
           <div className="custom-reminders">
             <label className="custom-reminders-label">Custom Reminders</label>
             <div className="reminder-input">
@@ -108,7 +131,7 @@ export const AddItemModal = ({
           {type === 'subscription' && (
             <>
               <input required type="number" step="0.1" placeholder="Monthly Amount (₹)" value={amount} onChange={(e) => setAmount(e.target.value)} />
-              <select name="billing-cycle" value = {billingCycle} onChange={(e)=> setBillingCycle(e.target.value as subCycle)}>
+              <select name="billing-cycle" required value = {billingCycle} onChange={(e)=> setBillingCycle(e.target.value as subCycle)}>
                 <option value="Monthly">Monthly</option>
                 <option value="Yearly">Yearly</option>
                 <option value="Weekly">Weekly</option>
