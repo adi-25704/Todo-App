@@ -1,0 +1,131 @@
+.dashboard-main {
+  flex: 1;
+  padding: 32px 64px;
+  overflow-y: auto;
+}
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: var(--text-main);
+}
+.cards-grid {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 56px;
+  flex-wrap: wrap;
+}
+
+
+.sub-card {
+  width: 180px;
+  height: 200px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  position: relative;
+  transition: transform 0.2s;
+}
+.sub-card:hover { transform: translateY(-2px); }
+.sub-icon { font-size: 1.5rem; margin-bottom: auto; }
+.sub-title { font-size: 1rem; font-weight: 600; margin: 0 0 8px 0; }
+.sub-price { font-size: 0.875rem; color: var(--text-muted); margin: 0; }
+
+.due-pill {
+  position: absolute;
+  bottom: -15px;
+  left: 20px;
+  background: var(--bg-main);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.due-pill.urgent { border: 1px solid var(--danger); }
+.due-pill.safe { border: 1px solid var(--success); }
+
+/* Task List */
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+}
+
+/* Custom Checkbox */
+.task-checkbox {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--text-muted);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.task-checkbox:checked { border-color: var(--accent); }
+.task-checkbox:checked::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background-color: var(--accent-inner);
+  border-radius: 2px;
+}
+.task-title {
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.task-title.completed {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.btns-sub
+{
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px; /* Spacing between the two icons */
+  z-index: 10;
+}
+
+.btns-task
+{
+  display: flex;
+  justify-content: end;
+}
+
+.view-btn, .delete-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 1.2rem;
+  color: white; /* Or your var(--text-main) */
+  transition: transform 0.2s;
+}
+
+.view-btn:hover, .delete-btn:hover {
+  transform: scale(1.1);
+}
+
+.delete-btn {
+  color: var(--danger);
+  opacity: 0; /* Only shows on card hover */
+}
+
+.sub-card:hover .delete-btn, .task-list:hover .delete-btn {
+  opacity: 1;
+}

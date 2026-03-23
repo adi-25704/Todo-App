@@ -1,0 +1,114 @@
+/* Modal / Add Item */
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px 
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  background: #1f2937;
+  padding: 6px 8px;
+  border-radius: 4px
+}
+
+.add-button{
+  background: #374151;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.custom-reminders{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid #374151;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.custom-reminders-label{
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.reminder-input
+{
+  display: flex;
+  gap: 8px;
+}
+
+.remove-reminder
+{
+  background: none;
+  border: none;
+  color: #f87171;
+  cursor: pointer;
+}
+
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 50;
+}
+.modal-content {
+  background: var(--bg-card);
+  padding: 32px;
+  border-radius: 16px;
+  width: 400px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  max-height: 600px;
+
+}
+.modal-content input {
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  color: white; padding: 12px; border-radius: 8px;
+}
+.btn-toggle {
+  flex: 1; padding: 10px; border-radius: 8px; border: none;
+  background: var(--bg-main); color: var(--text-muted); cursor: pointer;
+}
+.btn-toggle.active { background: var(--text-main); color: var(--bg-main); font-weight: bold; }
+.btn-submit { background: var(--accent); color: white; padding: 12px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; }
+.btn-cancel { background: transparent; color: var(--text-muted); border: none; cursor: pointer; }
+
+.autorenew-checkbox {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--text-muted);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.autorenew-checkbox:checked {
+  border-color: var(--accent);
+  background-color: var(--accent-inner);
+  background-clip: content-box; 
+  padding: 4px;
+  
+}
+
+.autorenew{
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+}
