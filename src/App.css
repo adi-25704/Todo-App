@@ -1,2 +1,11 @@
+.app-layout-main
+{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
 
-
+.app-header
+{
+    padding: 48px 64px 0 64px;
+}

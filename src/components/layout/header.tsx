@@ -8,31 +8,3 @@ export const Header = ({ onAddClick }: { onAddClick: () => void }) => {
     </div>
   );
 };
-
-// export function Header()
-// {
-//     return (
-//         <>
-//         <section className="header-bar">
-//             <h1>Subscription Tracker</h1>
-
-//             <div className="monthly-summary" aria-label="Shows monthly summary">
-//                 <table>
-//                     <tr>
-//                     <td>Monthly Expense</td>
-//                     <td>Pending Tasks</td>
-//                     <td>Clear</td>
-//                     </tr>
-//                     <tr>
-//                         <td></td>
-//                         <td></td>
-//                         <td></td>
-//                     </tr>                    
-//                 </table>
-//             </div>
-//         </section>
-        
-        
-//         </>
-//     )
-// }

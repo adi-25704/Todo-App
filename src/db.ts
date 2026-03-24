@@ -6,9 +6,9 @@ const db = new Dexie("TaskManager") as Dexie & {
     categories: EntityTable<{ name: string }, 'name'>;
 }
 
-db.version(2).stores(
+db.version(4).stores(
     {
-        items:"id, type, status, dueDate, category, title",
+        items:"id, type, taskStatus, dueDate, category, title, nextBillingDate, prevBillingDate",
         categories: 'name'
     }
 );

@@ -21,3 +21,119 @@
 .modal-content{
     position: relative;
 }
+
+.billing-cycle{
+  background: var(--bg-main);
+  color: white;
+  border: 1px solid var(--border-color);
+  padding: 12px;
+  border-radius: 8px; 
+  font-size: 1rem;
+  cursor: pointer;
+  appearance: auto;
+}
+
+.item-view-header
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; 
+}
+
+.item-view-title
+{
+    margin: 0;
+    color: var(--text-main);
+}
+
+.item-view-type
+{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12p;
+}
+
+.item-view-type span{
+    padding: 4px 8px;
+    background: var(--bg-main);
+    border-radius: 4px;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.item-view-autorenew{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.item-view-content
+{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+    color: var(--text-muted);}
+
+.item-view-submit
+{
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.item-view-submit .btn-submit
+{
+    flex: 1;
+    background: var(--accent);
+}
+
+.item-edit-form
+{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.item-edit-type
+{
+    margin: 0;
+    margin-bottom: 8px;
+}
+
+.item-edit-form label
+{
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.item-edit-description
+{
+    background: var(--bg-main); ;
+    order: 1px solid var(--border-color);
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    min-height: 80px;
+    font-family: inherit;
+}
+
+.item-edit-reminder
+{
+    flex: 1;
+}
+.item-edit-submit
+{
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.item-edit-submit .btn-submit
+{
+    flex: 1;
+    background: var(--success);
+}

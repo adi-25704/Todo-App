@@ -46,6 +46,7 @@
 }
 .due-pill.urgent { border: 1px solid var(--danger); }
 .due-pill.safe { border: 1px solid var(--success); }
+.due-pill.warning {border: 1px solid var(--warning)}
 
 /* Task List */
 .task-list {
@@ -128,4 +129,32 @@
 
 .sub-card:hover .delete-btn, .task-list:hover .delete-btn {
   opacity: 1;
+}
+
+.filter-select {
+  background: var(--bg-main);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.filter-select:hover, .filter-select:focus {
+  border-color: var(--accent);
+}
+
+.task-list .delete-btn
+{
+  position: relative; 
+  top: 0; 
+  right: 0;
+  margin-left: auto;
+}
+
+.placeholder
+{
+  color: 'var(--text-muted)'
 }

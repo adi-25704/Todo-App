@@ -5,53 +5,54 @@ import { getDaysUntil } from '../../utils/dateUtils';
 import "./dashboardGrid.css"
 import type { AppItem, subCycle, Subscription, Task } from '../../types';
 import { ViewTaskModal } from '../tasks/viewAndEditTask';
-import { useState } from 'react';
-// export const DashboardGrid = () => {
-//   // Automatically fetches and sorts by due date
-//   const items = useLiveQuery(() => db.items.orderBy('dueDate').toArray());
-
-//   const deleteItem = (id: string) => db.items.delete(id);
-
-//   if (!items) return <div style={{ color: 'var(--text-muted)' }}>Loading schedule...</div>;
-
-//   return (
-//     <div className="list-container">
-//       <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Schedule</h2>
-//       {items.map(item => (
-//         <div key={item.id} className="item-card">
-//           <div className="item-info">
-//             <h3>{item.title}</h3>
-//             <p>
-//               {item.type === 'subscription' ? `₹${(item as any).amount} • ` : ''}
-//               Due: {item.dueDate.toLocaleDateString()}
-//             </p>
-//           </div>
-//           <button 
-//             className="delete-btn" 
-//             onClick={() => deleteItem(item.id)}
-//             title="Delete item"
-//           >
-//             ✕
-//           </button>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// };
+import { useState, useEffect } from 'react';
+import { calculateNextBillingDate } from '../../utils/dateUtils';
 
 export const DashboardGrid = () => {
   const { deleteItem, toggleTask } = useTasks();
   const [isOpen, setIsOpen] = useState(false);
-  // Dexie automatically fetches and updates the UI when data changes!
+
+  const rawItems = useLiveQuery(() => db.items.toArray()) || [];
   const subscriptions = useLiveQuery(() => db.items.where('type').equals('subscription').toArray()) as Subscription[] || [];
   const tasks = useLiveQuery(() => db.items.where('type').equals('task').toArray()) as Task[] || [];
   const [selectedItem, setSelectedItem] = useState<AppItem|null>(null);
+  const [today, setToday] = useState(new Date());
   const cycleLabels: Record<subCycle, string> = {
   Monthly: "mo",
   Yearly: "yr",
   Weekly: "wk",
-  Daily: "day"
   };
+  useEffect(() => {
+    const interval = setInterval(() => setToday(new Date()), 3600000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const silentlyUpdateAutoRenews = async () => {
+      const now = new Date();
+
+      const pastDueAuto = rawItems.filter(item => 
+        item.type === 'subscription' && 
+        item.autoRenew && 
+        item.nextBillingDate < now
+      );
+
+      for (const item of pastDueAuto) {
+        if (item.type === 'subscription') {
+          const updatedItem = {
+            ...item,
+            prevBillingDate: item.nextBillingDate,
+            nextBillingDate: calculateNextBillingDate(item.nextBillingDate, item.billingCycle)
+          };
+          await db.items.put(updatedItem);
+        }
+      }
+    };
+
+    if (rawItems.length > 0) {
+      silentlyUpdateAutoRenews();
+    }
+  }, [rawItems]);
 
   return (
     <div className="dashboard-main">
@@ -59,35 +60,57 @@ export const DashboardGrid = () => {
       
       <div className="cards-grid">
         {subscriptions.map((sub) => {
-          const days = getDaysUntil(sub.endDate);
-          const isUrgent = days <= 5;
+          const daysLeft = getDaysUntil(sub.nextBillingDate);
+          const isOverdue = daysLeft < 0 && !sub.autoRenew && sub.taskStatus !== 'Completed';
+
+          let pillClass;
+          let pillText;
+
+          if (sub.autoRenew) {
+            pillClass = 'safe'; 
+            pillText = `Auto-Renews in ${daysLeft}`
+            if (daysLeft < 0) {
+          
+            pillText = 'RENEWING...'; 
+            }
+          } else {
+
+            if (isOverdue) {
+                pillClass = 'urgent'; 
+                pillText = `OVERDUE by ${Math.abs(daysLeft)}D`;
+            } else if (daysLeft <= 5) {
+                pillClass = 'warning'; 
+                pillText = `DUE IN ${daysLeft}D`
+            } else{
+              pillClass = 'safe';
+              pillText = `DUE IN ${daysLeft}D`;
+            }
+          }
           return (<>
             {selectedItem && <ViewTaskModal item={selectedItem} 
                               setIsOpen={setIsOpen} 
                               setSelectedItem={setSelectedItem} onClose={() => setSelectedItem(null)} />}
             <div key={sub.id} className="sub-card"> 
-              {/* <span className="sub-icon">{sub.icon}</span> */}
               <div>
                 <h3 className="sub-title">{sub.title}</h3>
                 <p className="sub-price">₹{sub.amount.toFixed(2)}/{cycleLabels[sub.billingCycle]}</p> 
                 <p className="description">{sub.description}</p>
-                {sub.autoRenew && <div className={`due-pill ${isUrgent ? 'urgent' : 'safe'}`}>
-                  Auto-renews IN {days}D
+                {sub.autoRenew && <div className={`due-pill ${pillClass}`}>
+                  {pillText}
                 </div>}
-                {!sub.autoRenew && <div className={`due-pill ${isUrgent ? 'urgent' : 'safe'}`}>
-                  DUE IN {days}D
+                {!sub.autoRenew && <div className={`due-pill ${pillClass}`}>
+                  {pillText}
                 </div>}
                 <div className="btns-sub"> 
                   <button className="view-btn" onClick={() => setSelectedItem(sub)}>👁</button>
                   <button className="delete-btn" onClick={() => deleteItem(sub.id)}>✕</button>
-                    
                 </div>
             </div>
             </div>
             </>
           );
         })}
-        {subscriptions.length === 0 && <p style={{color: 'var(--text-muted)'}}>No subscriptions added yet.</p>}
+        {subscriptions.length === 0 && <p className='placeholder'>No subscriptions added yet.</p>}
       </div>
 
       <h2 className="section-title">Today's Tasks</h2>
@@ -107,11 +130,11 @@ export const DashboardGrid = () => {
             <div className="btns-task">
               
             <button className="view-btn" onClick={() => setSelectedItem(task)}>👁</button>
-            <button className="delete-btn" style={{ position: 'relative', top: 0, right: 0, marginLeft: 'auto' }} onClick={() => deleteItem(task.id)}>✕</button>
+            <button className="delete-btn" onClick={() => deleteItem(task.id)}>✕</button>
           </div>
           </div>
         ))}
-        {tasks.length === 0 && <p style={{color: 'var(--text-muted)'}}>No tasks for today.</p>}
+        {tasks.length === 0 && <p className='placeholder'>No tasks for today.</p>}
       </div>
     </div>
 

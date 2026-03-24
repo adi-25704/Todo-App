@@ -3,6 +3,9 @@ import "./addTask.css";
 import { useTasks } from "../../hooks/useTasks";
 import type { subCycle, itemStatus, ItemType, AppItem } from "../../types";
 import { CategorySelect } from "./categorySelect";
+import { calculateNextBillingDate } from "../../utils/dateUtils";
+
+
 export const AddItemModal = ({ 
   isOpen, 
   onClose, 
@@ -19,9 +22,10 @@ export const AddItemModal = ({
   const [category, setCategory] = useState('');
   const [endDate,setEndDate] = useState<Date>(new Date());
   const [startDate,setStartDate] = useState<Date>(new Date());
+  const [nextBillingDate,setNextBillingDate] = useState<Date>(new Date());
   const [reminders, setReminders] = useState<Date[]>([]); 
   const [currentReminder, setCurrentReminder] = useState('');
-  
+  const [prevBillingDate, setPrevBillingDate] = useState<Date>(new Date());
   const [taskStatus, setTaskStatus] = useState<itemStatus>('Pending');
   const [billingCycle, setBillingCycle] = useState<subCycle>('Monthly');
   const [autoRenew, setAutoRenew] = useState(false);
@@ -45,7 +49,7 @@ export const AddItemModal = ({
       addTask(title, dueDate, description, category, reminders, taskStatus);
     } else {
       addSubscription(
-        title, startDate, endDate, description, category, 
+        title, startDate, endDate, nextBillingDate, prevBillingDate, description, category, 
         reminders, taskStatus, billingCycle, Number(amount), autoRenew
       );
     }
@@ -60,6 +64,9 @@ export const AddItemModal = ({
     setAutoRenew(false)
     setStartDate(new Date()); 
     setEndDate(new Date()); 
+    setBillingCycle("Monthly");
+    setPrevBillingDate(new Date());
+    setNextBillingDate(calculateNextBillingDate(startDate,billingCycle));
     onClose();
   };
 
@@ -68,18 +75,18 @@ export const AddItemModal = ({
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2 style={{ margin: 0 }}>Add New Item</h2>
+        <h2>Add New Item</h2>
         
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div className="add-item-selector">
           <button type="button" className={`btn-toggle ${type === 'task' ? 'active' : ''}`} onClick={() => setType('task')}>Task</button>
           <button type="button" className={`btn-toggle ${type === 'subscription' ? 'active' : ''}`} onClick={() => setType('subscription')}>Subscription</button>
         </div>
         
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <form className="add-item-submit" onSubmit={handleSubmit}>
           <input required type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-          { type === "task" &&
+          {type === "task" &&
           <>
-              <label htmlFor="due-date" style={{ display: 'block', marginBottom: '5px' }}>
+              <label className="add-item-date" htmlFor="due-date">
               Select Due Date:          
               </label>
               <input required type="date" placeholder="Choose your due date"
@@ -87,16 +94,16 @@ export const AddItemModal = ({
               const val = e.target.value; if (val) {setdueDate(new Date(val));}}} />
               </>
             }
-            { type === "subscription" &&
+            {type === "subscription" &&
           <>
-              <label htmlFor="start-date" style={{ display: 'block', marginBottom: '5px' }}>
+              <label className="add-item-date" htmlFor="start-date">
               Select Start Date:          
               </label>
               <input required type="date" placeholder="Choose your start date"
                value={startDate.toISOString().split('T')[0]} onChange={(e) => {
               const val = e.target.value; if (val) {setStartDate(new Date(val));}}} />
 
-              <label htmlFor="end-date" style={{ display: 'block', marginBottom: '5px' }}>
+              <label className="add-item-date" htmlFor="end-date">
               Select End Date:          
               </label>
               <input required type="date" placeholder="Choose your end date"
@@ -111,7 +118,7 @@ export const AddItemModal = ({
           <div className="custom-reminders">
             <label className="custom-reminders-label">Custom Reminders</label>
             <div className="reminder-input">
-              <input type="datetime-local" value={currentReminder} onChange={(e)=> setCurrentReminder(e.target.value)} style={{ flex: 1 }}/>
+              <input type="datetime-local" value={currentReminder} onChange={(e)=> setCurrentReminder(e.target.value)}/>
               <button type="button" className="add-button" onClick={handleAddReminder}>
                 Add
               </button>
@@ -131,11 +138,10 @@ export const AddItemModal = ({
           {type === 'subscription' && (
             <>
               <input required type="number" step="0.1" placeholder="Monthly Amount (₹)" value={amount} onChange={(e) => setAmount(e.target.value)} />
-              <select name="billing-cycle" required value = {billingCycle} onChange={(e)=> setBillingCycle(e.target.value as subCycle)}>
+              <select className="billing-cycle" name="billing-cycle" required value = {billingCycle} onChange={(e)=> setBillingCycle(e.target.value as subCycle)}>
                 <option value="Monthly">Monthly</option>
                 <option value="Yearly">Yearly</option>
                 <option value="Weekly">Weekly</option>
-                <option value="Daily">Daily</option>
               </select>
               <div className="autorenew">
                 <input type="checkbox" 
@@ -147,8 +153,11 @@ export const AddItemModal = ({
             </>)
             
           }
+          {type==="task" && <button type="submit" className="btn-submit">Save Item</button>}
           
-          <button type="submit" className="btn-submit">Save Item</button>
+          {type==="subscription" && <button type="submit" className="btn-submit" onClick={()=>{
+            setPrevBillingDate(startDate);
+            setNextBillingDate(calculateNextBillingDate(startDate,billingCycle))}}>Save Item</button>}
           <button type="button" className="btn-cancel" onClick={onClose}>Cancel</button>
         </form>
       </div>

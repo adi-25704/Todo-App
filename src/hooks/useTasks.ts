@@ -1,11 +1,9 @@
 import { db } from '../db';
-import type { itemStatus, subCycle, Subscription, Task } from '../types';
-
-
-
+import type { itemStatus, AppItem, subCycle, Subscription, Task } from '../types';
 
 export const useTasks = () => {
-  const addTask = async (title: string, dueDate: Date, description: string, category: string, reminders: Date[], taskStatus: itemStatus) => {
+  const addTask = async (title: string, dueDate: Date, description: string,
+                         category: string, reminders: Date[], taskStatus: itemStatus) => {
     const item: Task = {
       id: crypto.randomUUID(),
       type: "task",
@@ -22,10 +20,10 @@ export const useTasks = () => {
   }
 
   const addSubscription = async (title: string, startDate: Date, endDate: Date,
-                          description: string, category: string, 
-                          reminders: Date[], taskStatus: itemStatus,
-                          billingCycle: subCycle, amount: number,
-                         autoRenew: boolean) => {
+                                  nextBillingDate: Date, prevBillingDate: Date, 
+                                  description: string, category: string, reminders: Date[], 
+                                  taskStatus: itemStatus, billingCycle: subCycle, 
+                                  amount: number, autoRenew: boolean) => {
 
     const item : Subscription = {
       id: crypto.randomUUID(),
@@ -33,6 +31,8 @@ export const useTasks = () => {
       title,
       startDate,
       endDate,
+      nextBillingDate,
+      prevBillingDate,
       description,
       category,
       reminders,
@@ -47,13 +47,16 @@ export const useTasks = () => {
   }
 
   const deleteItem = async (id:string)=>{
-      await db.items.delete(id);
+    await db.items.delete(id);
   };
 
   const toggleTask = async (id:string, taskStatus: itemStatus) =>{
     await db.items.update(id,{ taskStatus })
   };
 
-  return {addTask, addSubscription, deleteItem, toggleTask}
+  const handleUpdateItem = async (updatedItem: AppItem) => {
+    await db.items.put(updatedItem);
+  };
 
+  return {addTask, addSubscription, deleteItem, toggleTask, handleUpdateItem}
 }

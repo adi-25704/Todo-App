@@ -112,3 +112,43 @@ li {
   gap: 16px;
   position: relative;
 }
+
+.billing-cycle{
+  background: var(--bg-main);
+  color: white;
+  border: 1px solid var(--border-color);
+  padding: 12px;
+  border-radius: 8px; 
+  font-size: 1rem;
+  cursor: pointer;
+  appearance: auto;
+}
+
+.add-item-date
+{
+  display: block;
+  margin-bottom: 5px;
+}
+
+.reminder-input input
+{
+  flex: 1;
+}
+
+.add-item-submit
+{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.add-item-selector
+{
+  display: flex;
+  gap: 8px;
+}
+
+.modal-content h2
+{
+  margin: 0;
+}

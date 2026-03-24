@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../db';
+import "./categorySelect.css"
 
 interface CategorySelectProps {
   selectedCategory: string;
@@ -12,16 +13,11 @@ const DEFAULT_CATEGORIES = [
   'Academic', 'Personal', 'Finance'
 ];
 
-export const CategorySelect = ({ selectedCategory, onChange }: CategorySelectProps) => {
+export const CategorySelect = ({ selectedCategory, onChange }: CategorySelectProps) => { 
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
-
   const savedCategories = useLiveQuery(() => db.categories.toArray()) || [];
-  
-  const allCategories = Array.from(new Set([
-    ...DEFAULT_CATEGORIES, 
-    ...savedCategories.map(cat => cat.name)
-  ]));
+  const allCategories = Array.from(new Set([...DEFAULT_CATEGORIES, ...savedCategories.map(cat => cat.name)]));
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (e.target.value === 'ADD_NEW') {
@@ -38,58 +34,32 @@ export const CategorySelect = ({ selectedCategory, onChange }: CategorySelectPro
       setIsAddingNew(false);
       return;
     }
-
     await db.categories.put({ name: trimmed });
-    
     onChange(trimmed);
     setNewCategoryName('');
     setIsAddingNew(false);
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      
+    <div className='category-select-main'> 
       {!isAddingNew ? (
-        <select 
-          value={selectedCategory} 
-          onChange={handleSelectChange}
-          style={{
-            background: 'var(--bg-main)', color: 'white', border: '1px solid var(--border-color)', 
-            padding: '12px', borderRadius: '8px', fontSize: '1rem', cursor: 'pointer', appearance: 'auto'
-          }}
-        >
+        <select className='category-select-selector' value={selectedCategory} onChange={handleSelectChange}>
           <option value="" disabled>Select a Category...</option>
-          {allCategories.map(cat => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
+          {allCategories.map(cat => (<option key={cat} value={cat}>{cat}</option>))}
           <option disabled>──────────</option>
-          <option value="ADD_NEW" style={{ color: 'var(--accent)', fontWeight: 'bold' }}>
+          <option className='category-select-add-new' value="ADD_NEW">
             + Add New Category...
           </option>
         </select>
       ) : (
+        <div className='category-select-text'>
+          <input type="text" autoFocus placeholder="Type new category..." value={newCategoryName}
+            onChange={(e) => setNewCategoryName(e.target.value)}/>
 
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <input 
-            type="text" 
-            autoFocus
-            placeholder="Type new category..."
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e.target.value)}
-            style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--accent)', background: 'var(--bg-main)', color: 'white' }}
-          />
-          <button 
-            type="button" 
-            onClick={handleSaveNewCategory}
-            style={{ background: 'var(--success)', color: 'white', border: 'none', padding: '0 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
-          >
+          <button className='category-select-submit' type="button" onClick={handleSaveNewCategory}>
             Save
           </button>
-          <button 
-            type="button" 
-            onClick={() => setIsAddingNew(false)}
-            style={{ background: 'transparent', color: 'var(--text-muted)', border: 'none', cursor: 'pointer' }}
-          >
+          <button className='category-select-cancel' type="button" onClick={() => setIsAddingNew(false)}>
             Cancel
           </button>
         </div>
